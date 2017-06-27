@@ -1159,7 +1159,7 @@ GuppyBackend.prototype.check_for_symbol = function(){
     var all_symbols = this.symbols;
     for(var s in GuppySymbols.symbols){
       if(s in all_symbols) continue;
-      all_symbols.push(s);
+      all_symbols[s] = GuppySymbols.symbols[s];
     }
     for(s in all_symbols){
     	if(instance.current.nodeName == 'e' && s.length <= (instance.caret - instance.space_caret) && !(GuppyUtils.is_blank(instance.current)) && instance.current.firstChild.nodeValue.search_at(instance.caret,s)){
@@ -1177,21 +1177,40 @@ GuppyBackend.prototype.check_for_symbol = function(){
     }
 }
 
-GuppyBackend.prototype.symb_raw = function(symb_name,latex_symb,text_symb){
-    this.symbols[symb_name] = {"output":{"latex":[latex_symb],
-					     "text":[text_symb]},
-				   "char":true,
-				   "type":symb_name};
+GuppyBackend.prototype.add_symb = function(symb_obj){
+  if("output" in symb_obj && "type" in symb_obj){
+    if("latex" in symb_obj["output"] && "text" in symb_obj["output"]){
+      this.symbols[symb_obj["type"]] = symb_obj;
+    }
+  }
 }
-
-GuppyBackend.prototype.symb_func = function(func_name){
-    this.symbols[func_name] = {"output":{"latex":"\\"+func_name+"\\left({$1}\\right)",
-					     "text":func_name+"({$1})"},
-				   "type":func_name,
-				   "attrs":{
-				       "delete":[1]
-				   }
-				  };
+GuppyBackend.prototype.remove_symb = function(symbol){
+  var symb_name = '';
+  if( "object" === typeof symbol ){
+    if( "type" in symbol ){
+      symb_name = symbol["type"];
+    }
+  }else if( "string" === typeof symbol ){
+    symb_name = symbol;
+  }
+  if(symb_name in this.symbols){
+    delete this.symbols[symb_name];
+  }
+}
+GuppyBackend.prototype.has_symb = function(symbol){
+  var has_symbol = false;
+  var symb_name = '';
+  if("object" === typeof symbol)){
+    if( "type" in symbol){
+      symb_name = symbol["type"];
+    }
+  }else if( "string" === typeof symbol) ){
+    symb_name = symbol;
+  }else{
+    return has_symbol;
+  }
+  has_symbol = (symb_name in this.symbols || symb_name in GuppySymbols.symbols)
+  return has_symbols;
 }
 
 module.exports = GuppyBackend;

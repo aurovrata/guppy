@@ -1200,11 +1200,11 @@ GuppyBackend.prototype.remove_symb = function(symbol){
 GuppyBackend.prototype.has_symb = function(symbol){
   var has_symbol = false;
   var symb_name = '';
-  if("object" === typeof symbol)){
+  if("object" === typeof symbol){
     if( "type" in symbol){
       symb_name = symbol["type"];
     }
-  }else if( "string" === typeof symbol) ){
+  }else if( "string" === typeof symbol) {
     symb_name = symbol;
   }else{
     return has_symbol;
